@@ -1,3 +1,5 @@
+import Notiflix from 'notiflix';
+
 const form = document.querySelector('.form');
 
 // слухач
@@ -9,7 +11,21 @@ form.addEventListener('submit', e => {
   const step = Number(form.elements.step.value);
   const amount = Number(form.elements.amount.value);
 
-  // можливо треба робити перевірку якщо введений "amount" більше нуля?
+  // можливо треба робити перевірку якщо введений "amount" та інші данні не меньше нуля?
+  /*
+if (delay < 0) {
+  delay = 0;
+}
+
+if (step < 0) {
+  step = 0;
+}
+
+if (amount < 0) {
+  amount = 0;
+}
+*/
+
   for (let i = 1; i <= amount; i++) {
     createPromise(i, delay)
       .then(({ position, delay }) => {
