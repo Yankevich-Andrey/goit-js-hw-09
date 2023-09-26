@@ -25,7 +25,7 @@ let intervalId = null;
 const buttonStart = document.querySelector('button[data-start]');
 buttonStart.disabled = true;
 
-//
+// function onDateSelect
 function onDateSelect(date) {
   selectedDate = date;
 
@@ -41,6 +41,7 @@ function addLeadingZero(value) {
   return String(value).padStart(2, '0');
 }
 
+// function updateTimer
 //function updateTimer
 function updateTimer({ days, hours, minutes, seconds }) {
   const timerDays = document.querySelector('span[data-days]');
@@ -54,16 +55,21 @@ function updateTimer({ days, hours, minutes, seconds }) {
   timerSeconds.textContent = addLeadingZero(seconds);
 }
 
-//function convertMs
+// convertMs
 function convertMs(ms) {
+  // Number of milliseconds per unit of time
   const second = 1000;
   const minute = second * 60;
   const hour = minute * 60;
   const day = hour * 24;
 
+  // Remaining days
   const days = Math.floor(ms / day);
+  // Remaining hours
   const hours = Math.floor((ms % day) / hour);
+  // Remaining minutes
   const minutes = Math.floor(((ms % day) % hour) / minute);
+  // Remaining seconds
   const seconds = Math.floor((((ms % day) % hour) % minute) / second);
 
   return { days, hours, minutes, seconds };
@@ -71,15 +77,23 @@ function convertMs(ms) {
 
 // слухач якщо нажали кнопку "Start"
 buttonStart.addEventListener('click', () => {
+  if (intervalId) {
+    return;
+  }
+
+  buttonStart.disabled = true;
+  fp.disabled = true;
+
   intervalId = setInterval(() => {
     const currentTime = Date.now();
     const deltaTime = selectedDate - currentTime;
-    const timeComponents = convertMs(deltaTime);
 
-    updateTimer(timeComponents);
+    updateTimer(convertMs(deltaTime));
 
     if (deltaTime < 1000) {
       clearInterval(intervalId);
+
+      fp.disabled = false;
     }
   }, 1000);
 });
