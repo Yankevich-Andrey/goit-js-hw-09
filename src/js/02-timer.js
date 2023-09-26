@@ -1,9 +1,9 @@
-// блок імпорту
+// імпорт
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import { Report } from 'notiflix/build/notiflix-report-aio';
 
-// додаткові опції
+// опції для flatpickr
 const options = {
   enableTime: true,
   time_24hr: true,
@@ -14,18 +14,17 @@ const options = {
   },
 };
 
-// ініціалізація бібліотекі flatpickr
-const fp = flatpickr('#datetime-picker', options);
-
 // змінні
+const datetimePicker = document.querySelector('#datetime-picker');
+const buttonStart = document.querySelector('button[data-start]');
+const timerDays = document.querySelector('span[data-days]');
+const timerHours = document.querySelector('span[data-hours]');
+const timerMinutes = document.querySelector('span[data-minutes]');
+const timerSeconds = document.querySelector('span[data-seconds]');
 let selectedDate = null;
 let intervalId = null;
 
-// доступ до кнопки "Start"
-const buttonStart = document.querySelector('button[data-start]');
-buttonStart.disabled = true;
-
-// function onDateSelect
+// функція onDateSelect
 function onDateSelect(date) {
   selectedDate = date;
 
@@ -36,53 +35,47 @@ function onDateSelect(date) {
   }
 }
 
-// function addLeadingZero
+// функція addLeadingZero
 function addLeadingZero(value) {
   return String(value).padStart(2, '0');
 }
 
-// function updateTimer
-//function updateTimer
+// функція updateTimer
 function updateTimer({ days, hours, minutes, seconds }) {
-  const timerDays = document.querySelector('span[data-days]');
-  const timerHours = document.querySelector('span[data-hours]');
-  const timerMinutes = document.querySelector('span[data-minutes]');
-  const timerSeconds = document.querySelector('span[data-seconds]');
-
   timerDays.textContent = addLeadingZero(days);
   timerHours.textContent = addLeadingZero(hours);
   timerMinutes.textContent = addLeadingZero(minutes);
   timerSeconds.textContent = addLeadingZero(seconds);
 }
 
-// convertMs
+// функція convertMs
 function convertMs(ms) {
-  // Number of milliseconds per unit of time
+  // Кількість мілісекунд в одиниці часу
   const second = 1000;
   const minute = second * 60;
   const hour = minute * 60;
   const day = hour * 24;
 
-  // Remaining days
+  // Решта днів
   const days = Math.floor(ms / day);
-  // Remaining hours
+  // Решта годин
   const hours = Math.floor((ms % day) / hour);
-  // Remaining minutes
+  // Решта хвилин
   const minutes = Math.floor(((ms % day) % hour) / minute);
-  // Remaining seconds
+  // Решта секунд
   const seconds = Math.floor((((ms % day) % hour) % minute) / second);
 
   return { days, hours, minutes, seconds };
 }
 
-// слухач якщо нажали кнопку "Start"
+// слухач події click на кнопці "Start"
 buttonStart.addEventListener('click', () => {
   if (intervalId) {
     return;
   }
 
   buttonStart.disabled = true;
-  fp.disabled = true;
+  datetimePicker.disabled = true;
 
   intervalId = setInterval(() => {
     const currentTime = Date.now();
@@ -92,8 +85,8 @@ buttonStart.addEventListener('click', () => {
 
     if (deltaTime < 1000) {
       clearInterval(intervalId);
-
-      fp.disabled = false;
+      datetimePicker.disabled = false;
+      intervalId = null;
     }
   }, 1000);
 });
