@@ -1,61 +1,38 @@
 import Notiflix from 'notiflix';
 
-const form = document.querySelector('.form');
+const amountEl = document.querySelector(`input[name="amount"]`);
+const delayEl = document.querySelector(`input[name="delay"]`);
+const stepEl = document.querySelector('input[name="step"]');
+const btn = document.querySelector(`button`);
 
-// слухач
-form.addEventListener('submit', e => {
-  e.preventDefault();
+btn.addEventListener(`click`, onClickButton);
 
-  // змінні
-  let delay = Number(form.elements.delay.value);
-  const step = Number(form.elements.step.value);
-  const amount = Number(form.elements.amount.value);
+function onClickButton(evt) {
+  evt.preventDefault();
+  let step = Number(stepEl.value);
+  let delay = Number(delayEl.value);
+  let amount = Number(amountEl.value);
 
-  // можливо треба робити перевірку якщо введений "amount" та інші данні не меньше нуля?
-  /*
-if (delay < 0) {
-  delay = 0;
-}
-
-if (step < 0) {
-  step = 0;
-}
-
-if (amount < 0) {
-  amount = 0;
-}
-*/
-
-  for (let i = 1; i <= amount; i++) {
+  for (let i = 1; i <= amount; i += 1) {
     createPromise(i, delay)
-      .then(({ position, delay }) => {
-        notiflix.Notify.success(
-          `✅ Fulfilled promise ${position} in ${delay}ms`
-        );
-      })
-      .catch(({ position, delay }) => {
-        notiflix.Notify.failure(
-          `❌ Rejected promise ${position} in ${delay}ms`
-        );
-      });
-
+      .then(({ i, delay }) =>
+        Notiflix.Notify.success(`✅ Fulfilled promise ${i} in ${delay}ms`)
+      )
+      .catch(({ i, delay }) =>
+        Notiflix.Notify.failure(`❌ Rejected promise ${i} in ${delay}ms`)
+      );
     delay += step;
   }
-});
+}
 
-// function createPromise
-function createPromise(position, delay) {
-  const shouldResolve = Math.random() > 0.3;
-
+function createPromise(i, delay) {
   return new Promise((resolve, reject) => {
+    const shouldResolve = Math.random() > 0.3;
     setTimeout(() => {
       if (shouldResolve) {
-        // коли Resolve
-        resolve({ position, delay });
-      } else {
-        // коли Reject
-        reject({ position, delay });
+        resolve({ i, delay });
       }
+      reject({ i, delay });
     }, delay);
   });
 }
